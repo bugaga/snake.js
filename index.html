@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ua">
+<head>
+    <meta charset="UTF-8">
+    <title>Snake</title>
+    <style>
+
+    </style>
+</head>
+<body>
+
+<canvas id="snake" width="800" height="500"></canvas>
+<br>
+<button id="startGame">Star</button>
+<button id="stopMove">Pause</button>
+<button id="restert">Restart</button>
+<button id="showObj">Show obj</button>
+
+
+<script src="snake.js"></script>
+<script>
+    var sn = new Snake();
+    var speed = 80;
+
+    setInterval(function() {
+        sn.moveSnake();
+    }, speed);
+
+    document.getElementById("startGame").onclick = function() {
+        sn.stopMove = false;
+    };
+
+    document.getElementById("stopMove").onclick = function() {
+        sn.stopMove = true;
+    };
+
+    document.getElementById("restert").onclick = function () {
+        sn.reset();
+    }
+
+    document.getElementById("showObj").onclick = function () {
+        console.log(sn);
+    }
+
+    document.body.onkeydown = function(e) {
+        if (e.keyCode === 38) sn.changeDirection("up");
+        if (e.keyCode === 39) sn.changeDirection("right");
+        if (e.keyCode === 40) sn.changeDirection("down");
+        if (e.keyCode === 37) sn.changeDirection("left");
+
+        if (e.keyCode === 32) {
+            sn.stopMove = sn.stopMove ? false : true;
+        }
+
+        if (e.keyCode == 82) sn.reset();
+
+//        console.log(e.keyCode);
+    }
+</script>
+</body>
+</html>
