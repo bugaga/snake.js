@@ -276,7 +276,7 @@
             context.stroke();
         }
 
-        setTimeout(moveSnake, spped);
+        setTimeout(moveSnake, speed);
     }
 
 
