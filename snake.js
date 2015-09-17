@@ -139,7 +139,7 @@
             return true;
         };
 
-        var changeDirection = function(newDirection) {
+        this.changeDirection = function(newDirection) {
             if (!checkNewDirection(newDirection)) return false;
 
             head.direction = newDirection;
