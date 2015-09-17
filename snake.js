@@ -276,12 +276,7 @@
             context.stroke();
         }
 
-        (function() {
-            setTimeout(function move() {
-                if (this.isMove) moveSnake();
-                setTimeout(move, speed);
-            }, speed);
-        })();
+        setTimeout(moveSnake, spped);
     }
 
 
