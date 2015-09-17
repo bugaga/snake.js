@@ -14,32 +14,22 @@
 <button id="startGame">Star</button>
 <button id="stopMove">Pause</button>
 <button id="restert">Restart</button>
-<button id="showObj">Show obj</button>
 
 
 <script src="snake.js"></script>
 <script>
-    var sn = new Snake();
-    var speed = 80;
-
-    setInterval(function() {
-        sn.moveSnake();
-    }, speed);
+    var sn = new Snake('snake', 80);
 
     document.getElementById("startGame").onclick = function() {
-        sn.stopMove = false;
+        sn.isMove = true;
     };
 
     document.getElementById("stopMove").onclick = function() {
-        sn.stopMove = true;
+        sn.isMove = false;
     };
 
     document.getElementById("restert").onclick = function () {
         sn.reset();
-    }
-
-    document.getElementById("showObj").onclick = function () {
-        console.log(sn);
     }
 
     document.body.onkeydown = function(e) {
@@ -49,13 +39,12 @@
         if (e.keyCode === 37) sn.changeDirection("left");
 
         if (e.keyCode === 32) {
-            sn.stopMove = sn.stopMove ? false : true;
+            sn.isMove = sn.isMove ? false : true;
         }
 
         if (e.keyCode == 82) sn.reset();
-
-//        console.log(e.keyCode);
     }
+
 </script>
 </body>
 </html>

@@ -1,13 +1,17 @@
 (function() {
 
-    function Snake() {
-        var canvas = document.getElementById("snake");
+    function Snake(canvas, speed) {
+        var canvas = document.getElementById(canvas);
         var context = canvas.getContext('2d');
         var WIDTH = canvas.width;
         var HEIGHT = canvas.height;
+        var speed = speed;
 
         var CEIL_WIDTH = 20;
         var maxFoodCount = 3;
+
+        this.isMove = false;
+        var isDie = false;
 
         var objects = {
             barriers: (function() {
@@ -27,7 +31,7 @@
                         y: i
                     });
                 }
-                // down wall
+                // bottom wall
                 for (i = 0; i * CEIL_WIDTH < WIDTH; i++) {
                     arr.push({
                         x: i,
@@ -58,22 +62,14 @@
 
         };
 
-        function checkForObjects(objcts, head) {
-            for (var i = 0; i < objcts.length; i++) {
-                if (objcts[i].x === head.x && objcts[i].y === head.y) return objcts[i];
-            }
-        }
 
-        this.stopMove = true;
-        this.die = false;
-
-        this.head = {
+        var head = {
             direction: "right",
             x: Math.round(WIDTH/(2*CEIL_WIDTH)),
             y: Math.round(HEIGHT/(2*CEIL_WIDTH))
         };
 
-        this.body = (function(x, y) {
+        var body = (function(x, y) {
             var arr = [];
             for (var i = 1; i < 4; i++) arr.push({
                 direction: "right",
@@ -81,20 +77,26 @@
                 y: y
             });
             return arr;
-        })(this.head.x, this.head.y);
+        })(head.x, head.y);
 
-        this.moveSnake = function() {
-            var intermediateDirection, direction = this.head.direction, body = this.body, food;
+        function checkForObjects(objcts) {
+            for (var i = 0; i < objcts.length; i++) {
+                if (objcts[i].x === head.x && objcts[i].y === head.y) return objcts[i];
+            }
+        }
 
-            if (this.die) return false;
+        var moveSnake = function() {
+            var intermediateDirection, direction = head.direction, body = body, food;
+
+            if (isDie) return false;
 
             if (objects.food.length < maxFoodCount) addFood();
 
-            update(this);
+            updateCanvas();
 
-            if (this.stopMove) return false;
+            if (!this.isMove) return false;
 
-            makeStep(this.head);
+            makeStep(head);
 
             for (var i = 0; i < body.length; i++) {
                 intermediateDirection = body[i].direction;
@@ -103,15 +105,15 @@
                 direction = intermediateDirection;
             }
 
-            if (checkForObjects(objects.barriers, this.head) || checkForObjects(this.body, this.head)) {
-                this.die = true;
+            if (checkForObjects(objects.barriers) || checkForObjects(body)) {
+                isDie = true;
                 alert("Game over");
             } else {
-                update(this);
+                updateCanvas();
             }
 
-            if (food = checkForObjects(objects.food, this.head)) {
-                takeFood(this);
+            if (food = checkForObjects(objects.food)) {
+                takeFood();
                 deleteFood(food);
             }
 
@@ -129,28 +131,28 @@
 
         };
 
-        this.checkNewDirection = function(newDirection) {
-            if (this.body[0].direction === "right" && newDirection === "left") return false;
-            if (this.body[0].direction === "left" && newDirection === "right") return false;
-            if (this.body[0].direction === "up" && newDirection === "down") return false;
-            if (this.body[0].direction === "down" && newDirection === "up") return false;
+        var checkNewDirection = function(newDirection) {
+            if (body[0].direction === "right" && newDirection === "left") return false;
+            if (body[0].direction === "left" && newDirection === "right") return false;
+            if (body[0].direction === "up" && newDirection === "down") return false;
+            if (body[0].direction === "down" && newDirection === "up") return false;
             return true;
         };
 
-        this.changeDirection = function(newDirection) {
-            if (!this.checkNewDirection(newDirection)) return false;
+        var changeDirection = function(newDirection) {
+            if (!checkNewDirection(newDirection)) return false;
 
-            this.head.direction = newDirection;
+            head.direction = newDirection;
         };
 
         this.reset = function() {
-            this.head = {
+            head = {
                 direction: "right",
                 x: Math.round(WIDTH/(2*CEIL_WIDTH)) - 3,
                 y: Math.round(HEIGHT/(2*CEIL_WIDTH)) - 3
             };
 
-            this.body = (function(x, y) {
+            body = (function(x, y) {
                 var arr = [];
                 for (var i = 1; i < 4; i++) arr.push({
                     direction: "right",
@@ -158,25 +160,25 @@
                     y: y
                 });
                 return arr;
-            })(this.head.x, this.head.y);
+            })(head.x, head.y);
 
-            this.stopMove = true;
-            this.die = false;
-            update(this);
+            this.isMove = false;
+            isDie = false;
+            updateCanvas();
         };
 
-        function update(snake) {
+        function updateCanvas() {
             drawField();
-            drawSnake(snake);
+            drawSnake();
             drawFood();
         }
 
-        function drawSnake(snake) {
-            var body = snake.body;
+        function drawSnake() {
+            var body = body;
 
             // draw head
             context.beginPath();
-            context.rect(snake.head.x * CEIL_WIDTH, snake.head.y * CEIL_WIDTH, CEIL_WIDTH, CEIL_WIDTH);
+            context.rect(head.x * CEIL_WIDTH, head.y * CEIL_WIDTH, CEIL_WIDTH, CEIL_WIDTH);
             context.fillStyle = "blue";
             context.fill();
             context.stroke();
@@ -216,8 +218,8 @@
             context.stroke();
         }
 
-        function takeFood(snake) {
-            var lastBodyCeil = snake.body[snake.body.length - 1],
+        function takeFood() {
+            var lastBodyCeil = body[body.length - 1],
                 newBodyCeil = {direction: lastBodyCeil.direction};
 
             switch (lastBodyCeil.direction) {
@@ -239,7 +241,7 @@
                     break;
             }
 
-            snake.body.push(newBodyCeil);
+            body.push(newBodyCeil);
         }
 
         function deleteFood(food) {
@@ -273,7 +275,15 @@
 
             context.stroke();
         }
+
+        (function() {
+            setTimeout(function move() {
+                if (this.isMove) moveSnake();
+                setTimeout(move, speed);
+            }, speed);
+        })();
     }
+
 
     window.Snake = Snake;
 }());
