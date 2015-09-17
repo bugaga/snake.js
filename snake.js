@@ -6,6 +6,7 @@
         var WIDTH = canvas.width;
         var HEIGHT = canvas.height;
         var speed = speed;
+        var self = this;
 
         var CEIL_WIDTH = 20;
         var maxFoodCount = 3;
@@ -85,8 +86,8 @@
             }
         }
 
-        var moveSnake = function() {
-            var intermediateDirection, direction = head.direction, body = body, food;
+        function moveSnake() {
+            var intermediateDirection, direction = head.direction, food;
 
             if (isDie) return false;
 
@@ -94,7 +95,7 @@
 
             updateCanvas();
 
-            if (!this.isMove) return false;
+            if (!self.isMove) return false;
 
             makeStep(head);
 
@@ -131,7 +132,7 @@
 
         };
 
-        var checkNewDirection = function(newDirection) {
+        function checkNewDirection(newDirection) {
             if (body[0].direction === "right" && newDirection === "left") return false;
             if (body[0].direction === "left" && newDirection === "right") return false;
             if (body[0].direction === "up" && newDirection === "down") return false;
@@ -162,7 +163,7 @@
                 return arr;
             })(head.x, head.y);
 
-            this.isMove = false;
+            self.isMove = false;
             isDie = false;
             updateCanvas();
         };
@@ -174,7 +175,6 @@
         }
 
         function drawSnake() {
-            var body = body;
 
             // draw head
             context.beginPath();
@@ -276,9 +276,8 @@
             context.stroke();
         }
 
-        setTimeout(moveSnake, speed);
+        setInterval(moveSnake, speed);
     }
-
 
     window.Snake = Snake;
 }());
