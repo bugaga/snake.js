@@ -1,0 +1,11 @@
+[
+	{
+		"external_id": "payment-method-token-1",
+		"spreedly_token": "NEW_payment-method-token-1"
+	},
+	{
+		"external_id": "bla-bla-bla-12345",
+		"spreedly_token": "NEW_bla-bla-bla-12345"
+	}
+]
+
